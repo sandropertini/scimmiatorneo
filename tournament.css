@@ -53,8 +53,33 @@ li {
     margin-bottom: 10px;
 }
 
-#match-results-input input {
-    width: 50px;
-    margin: 0 10px;
+#match-results-input {
+    margin-bottom: 20px;
+}
+
+.match-input {
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.match-input label {
+    margin-right: 10px;
+}
+
+.match-input input[type="number"] {
+    width: 60px;
     padding: 5px;
+    margin: 0 5px;
+}
+
+.match-input select {
+    padding: 5px;
+    margin: 0 5px;
+    min-width: 150px;
+}
+
+.match-input div {
+    margin-top: 5px;
 }
