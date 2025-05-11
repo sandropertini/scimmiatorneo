@@ -1,25 +1,8 @@
 // Stato globale
 let teams = [];
-let charactersData = [];
 let calendar = [];
 let standings = [];
 let currentMatchday = 0;
-
-// Carica i dati dei personaggi (statistiche)
-document.addEventListener('DOMContentLoaded', () => {
-    fetch('data/characters.json')
-        .then(response => {
-            if (!response.ok) throw new Error('Errore nel caricamento di characters.json');
-            return response.json();
-        })
-        .then(data => {
-            charactersData = data;
-        })
-        .catch(error => {
-            console.error('Errore:', error);
-            alert('Impossibile caricare i personaggi. Verifica che data/characters.json esista.');
-        });
-});
 
 // Carica il file JSON delle squadre
 function loadTeams() {
@@ -147,34 +130,68 @@ function updateStandings() {
     });
 }
 
-// Simula una giornata
-function simulateMatchday() {
+// Inizia l'inserimento dei risultati per una giornata
+function startMatchdayInput() {
     if (currentMatchday >= calendar.length) {
         alert('Campionato completato!');
         return;
     }
 
     const day = calendar[currentMatchday];
-    day.matches.forEach(match => {
+    const inputDiv = document.getElementById('match-results-input');
+    inputDiv.innerHTML = '';
+    document.getElementById('current-matchday').textContent = day.matchday;
+    document.getElementById('matchday-input').style.display = 'block';
+
+    day.matches.forEach((match, index) => {
         if (!match.played) {
-            const result = simulateMatch(match.home, match.away);
-            match.homeGoals = result.homeGoals;
-            match.awayGoals = result.awayGoals;
+            const div = document.createElement('div');
+            div.innerHTML = `
+                ${match.home} vs ${match.away}: 
+                <input type="number" min="0" id="home-goals-${index}" placeholder="Gol Casa" required>
+                -
+                <input type="number" min="0" id="away-goals-${index}" placeholder="Gol Trasferta" required>
+            `;
+            inputDiv.appendChild(div);
+        }
+    });
+}
+
+// Salva i risultati della giornata
+function saveMatchdayResults() {
+    const day = calendar[currentMatchday];
+    let allValid = true;
+
+    day.matches.forEach((match, index) => {
+        if (!match.played) {
+            const homeGoalsInput = document.getElementById(`home-goals-${index}`);
+            const awayGoalsInput = document.getElementById(`away-goals-${index}`);
+            const homeGoals = parseInt(homeGoalsInput.value) || -1;
+            const awayGoals = parseInt(awayGoalsInput.value) || -1;
+
+            if (homeGoals < 0 || awayGoals < 0) {
+                alert(`Inserisci un numero valido di gol per ${match.home} vs ${match.away}!`);
+                allValid = false;
+                return;
+            }
+
+            match.homeGoals = homeGoals;
+            match.awayGoals = awayGoals;
             match.played = true;
 
             // Aggiorna classifica
             const homeTeam = standings.find(s => s.team === match.home);
             const awayTeam = standings.find(s => s.team === match.away);
-            homeTeam.goalsFor += result.homeGoals;
-            homeTeam.goalsAgainst += result.awayGoals;
-            awayTeam.goalsFor += result.awayGoals;
-            awayTeam.goalsAgainst += result.homeGoals;
+            homeTeam.goalsFor += homeGoals;
+            homeTeam.goalsAgainst += awayGoals;
+            awayTeam.goalsFor += awayGoals;
+            awayTeam.goalsAgainst += homeGoals;
 
-            if (result.homeGoals > result.awayGoals) {
+            if (homeGoals > awayGoals) {
                 homeTeam.points += 3;
                 homeTeam.wins += 1;
                 awayTeam.losses += 1;
-            } else if (result.awayGoals > result.homeGoals) {
+            } else if (awayGoals > homeGoals) {
                 awayTeam.points += 3;
                 awayTeam.wins += 1;
                 homeTeam.losses += 1;
@@ -187,44 +204,12 @@ function simulateMatchday() {
         }
     });
 
-    currentMatchday++;
-    displayCalendar();
-    updateStandings();
-}
-
-// Simula tutte le giornate
-function simulateAll() {
-    while (currentMatchday < calendar.length) {
-        simulateMatchday();
+    if (allValid) {
+        currentMatchday++;
+        document.getElementById('matchday-input').style.display = 'none';
+        displayCalendar();
+        updateStandings();
     }
-}
-
-// Simula una partita
-function simulateMatch(homePlayer, awayPlayer) {
-    const homeTeam = teams.find(t => t.player === homePlayer);
-    const awayTeam = teams.find(t => t.player === awayPlayer);
-
-    // Calcola la forza della squadra basata sulle statistiche dei personaggi
-    const homeStrength = calculateTeamStrength(homeTeam);
-    const awayStrength = calculateTeamStrength(awayTeam);
-
-    // Simulazione semplice basata sulla forza
-    const homeGoals = Math.floor(Math.random() * 5 * (homeStrength / (homeStrength + awayStrength)));
-    const awayGoals = Math.floor(Math.random() * 5 * (awayStrength / (homeStrength + awayStrength)));
-
-    return { homeGoals, awayGoals };
-}
-
-// Calcola la forza di una squadra
-function calculateTeamStrength(team) {
-    let totalStrength = 0;
-    team.characters.forEach(char => {
-        const charData = charactersData.find(c => c.id === char.id);
-        if (charData) {
-            totalStrength += charData.total || 50; // Usa 'total' o un valore predefinito
-        }
-    });
-    return totalStrength / team.characters.length || 1; // Media per evitare divisioni per zero
 }
 
 // Esporta i risultati del campionato
