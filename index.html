@@ -18,19 +18,26 @@
     <div id="teams-list" style="display: none;">
         <h2>Squadre Caricate</h2>
         <ul id="teams"></ul>
-        <button onclick="generateLeague()">Genera Campionato</button>
+        <div>
+            <label for="competition-type">Tipo Competizione:</label>
+            <select id="competition-type">
+                <option value="league">Campionato</option>
+                <option value="tournament">Torneo a Scontri Diretti</option>
+            </select>
+            <button onclick="generateCompetition()">Genera Competizione</button>
+        </div>
     </div>
 
-    <div id="league-section" style="display: none;">
-        <h2>Campionato</h2>
+    <div id="competition-section" style="display: none;">
+        <h2 id="competition-title"></h2>
         <h3>Calendario</h3>
         <div id="calendar"></div>
         <div id="matchday-input" style="display: none;">
-            <h4>Inserisci Risultati Giornata <span id="current-matchday"></span></h4>
+            <h4>Inserisci Risultati <span id="current-matchday"></span></h4>
             <div id="match-results-input"></div>
             <button onclick="saveMatchdayResults()">Salva Risultati</button>
         </div>
-        <button onclick="startMatchdayInput()">Inserisci Risultati Giornata</button>
+        <button onclick="startMatchdayInput()">Inserisci Risultati</button>
         <button onclick="exportResults()">Esporta Risultati</button>
         <h3>Classifica</h3>
         <table>
@@ -48,6 +55,10 @@
             </thead>
             <tbody id="standings"></tbody>
         </table>
+        <div id="tournament-standings" style="display: none;">
+            <h3>Classifica Finale Torneo</h3>
+            <ul id="tournament-positions"></ul>
+        </div>
     </div>
 
     <script src="tournament.js"></script>
