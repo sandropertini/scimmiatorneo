@@ -113,7 +113,7 @@ function generateTournament() {
     const numTeams = teamNames.length;
     const powerOfTwo = Math.pow(2, Math.ceil(Math.log2(numTeams)));
     
-    // Aggiungi squadre "bye" se necessario
+    // Aggiungi squadre "BYE" se necessario
     while (teamNames.length < powerOfTwo) {
         teamNames.push('BYE');
     }
@@ -139,7 +139,7 @@ function generateTournament() {
     const numRounds = Math.log2(powerOfTwo);
     for (let i = 1; i < numRounds; i++) {
         const roundName = i === numRounds - 1 ? 'Finale' : `Semifinali`;
-        const matches = Array(powerOfTwo / Math.pow(2, i + 1)).fill().map(() => ({
+        const matches = Array(powerOfTwo / Math.pow(2, i uber + 1)).fill().map(() => ({
             home: null,
             away: null,
             played: false,
@@ -283,8 +283,10 @@ function startMatchdayInput() {
     document.getElementById('current-matchday').textContent = competition.type === 'league' ? `Giornata ${round.matchday}` : round.round;
     document.getElementById('matchday-input').style.display = 'block';
 
+    let hasValidMatches = false;
     round.matches.forEach((match, matchIndex) => {
         if (!match.played && match.home && match.away && match.home !== 'BYE' && match.away !== 'BYE') {
+            hasValidMatches = true;
             const matchDiv = document.createElement('div');
             matchDiv.className = 'match-input';
             matchDiv.innerHTML = `<strong>${match.home} vs ${match.away}</strong><br>
@@ -296,18 +298,29 @@ function startMatchdayInput() {
                 <div id="away-goals-details-${matchIndex}"></div>
             `;
 
+            inputDiv.appendChild(matchDiv);
+
+            // Aggiungi listener per aggiornare i dettagli dei gol
             const homeGoalsInput = matchDiv.querySelector(`#home-goals-${matchIndex}`);
             const awayGoalsInput = matchDiv.querySelector(`#away-goals-${matchIndex}`);
-            homeGoalsInput触摸
-
             homeGoalsInput.addEventListener('input', () => updateGoalDetails(match, matchIndex, 'home'));
             awayGoalsInput.addEventListener('input', () => updateGoalDetails(match, matchIndex, 'away'));
 
-            inputDiv.appendChild(matchDiv);
+            // Inizializza i dettagli dei gol
             updateGoalDetails(match, matchIndex, 'home');
             updateGoalDetails(match, matchIndex, 'away');
         }
     });
+
+    if (!hasValidMatches) {
+        alert('Nessuna partita valida da giocare in questo turno!');
+        currentRound++;
+        if (competition.type === 'tournament') {
+            updateTournamentBracket();
+        }
+        displayCalendar();
+        document.getElementById('matchday-input').style.display = 'none';
+    }
 }
 
 // Aggiorna i campi per i dettagli dei gol
@@ -348,6 +361,13 @@ function saveMatchdayResults() {
 
             if (homeGoals < 0 || awayGoals < 0) {
                 alert(`Inserisci un numero valido di gol per ${match.home} vs ${match.away}!`);
+                allValid = false;
+                return;
+            }
+
+            // Per il torneo, assicurati che ci sia un vincitore
+            if (competition.type === 'tournament' && homeGoals === awayGoals) {
+                alert(`Nel torneo, la partita ${match.home} vs ${match.away} deve avere un vincitore!`);
                 allValid = false;
                 return;
             }
@@ -400,7 +420,6 @@ function saveMatchdayResults() {
             match.goals = goals;
             match.played = true;
 
-            // Aggiorna statistiche per campionato o torneo
             const homeTeam = standings.find(s => s.team === match.home);
             const awayTeam = standings.find(s => s.team === match.away);
             homeTeam.goalsFor += homeGoals;
@@ -450,7 +469,6 @@ function updateTournamentBracket() {
     const nextRound = competition.data[currentRound + 1];
 
     if (isSemifinals) {
-        // Identifica i perdenti per lo spareggio
         const losers = [];
         currentRoundData.matches.forEach(match => {
             if (match.homeGoals > match.awayGoals) {
@@ -460,7 +478,6 @@ function updateTournamentBracket() {
             }
         });
 
-        // Imposta lo spareggio 3°/4° posto
         const thirdPlaceMatch = competition.data.find(r => r.round === 'Spareggio 3°/4° Posto').matches[0];
         if (losers.length === 2) {
             thirdPlaceMatch.home = losers[0];
@@ -469,7 +486,6 @@ function updateTournamentBracket() {
     }
 
     if (isFinal) {
-        // Assegna 1° e 2° posto
         const finalMatch = currentRoundData.matches[0];
         if (finalMatch.homeGoals > finalMatch.awayGoals) {
             tournamentPositions[0] = { team: finalMatch.home, position: '1°' };
@@ -481,7 +497,6 @@ function updateTournamentBracket() {
     }
 
     if (currentRoundData.round === 'Spareggio 3°/4° Posto') {
-        // Assegna 3° e 4° posto
         const thirdPlaceMatch = currentRoundData.matches[0];
         if (thirdPlaceMatch.homeGoals > thirdPlaceMatch.awayGoals) {
             tournamentPositions[2] = { team: thirdPlaceMatch.home, position: '3°' };
@@ -492,11 +507,14 @@ function updateTournamentBracket() {
         }
     }
 
-    // Aggiorna il turno successivo
     if (nextRound && nextRound.round !== 'Spareggio 3°/4° Posto') {
         const winners = [];
         currentRoundData.matches.forEach(match => {
-            if (match.homeGoals > match.awayGoals) {
+            if (match.home === 'BYE') {
+                winners.push(match.away);
+            } else if (match.away === 'BYE') {
+                winners.push(match.home);
+            } else if (match.homeGoals > match.awayGoals) {
                 winners.push(match.home);
             } else if (match.awayGoals > match.homeGoals) {
                 winners.push(match.away);
