@@ -156,21 +156,43 @@ li {
 }
 
 .match-input {
-    margin: 10px 0;
-    padding: 10px;
-    background: rgba(0, 0, 0, 0.7);
+    margin: 15px 0;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.8);
     border: 2px solid #ff00ff;
-    border-radius: 5px;
+    border-radius: 8px;
     box-shadow: 0 0 15px #ff00ff;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.match-input strong {
+    font-family: 'Orbitron', sans-serif;
+    color: #00ffcc;
+    text-shadow: 0 0 5px #00ffcc;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.match-input .team-section {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
 }
 
 .match-input label {
     color: #00ffcc;
     text-shadow: 0 0 5px #00ffcc;
+    font-size: 1em;
 }
 
 .match-input input[type="number"] {
-    width: 60px;
+    width: 80px;
     background: #222;
     border-color: #ff00ff;
     box-shadow: 0 0 10px #ff00ff;
@@ -182,7 +204,7 @@ li {
 }
 
 .match-input select {
-    min-width: 150px;
+    width: 200px;
     background: #333;
     border-color: #00ff00;
     box-shadow: 0 0 10px #00ff00;
@@ -193,8 +215,22 @@ li {
     box-shadow: 0 0 15px #ffff00;
 }
 
-.match-input div {
-    margin-top: 5px;
+.match-input .goal-details {
+    margin-top: 10px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #00ff00;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.match-input .goal-details div {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 10px;
+    align-items: center;
 }
 
 #tournament-standings {
@@ -229,12 +265,26 @@ li {
         padding: 8px;
     }
 
-    input[type="number"] {
-        width: 50px;
+    .match-input {
+        padding: 10px;
     }
 
-    select {
-        min-width: 120px;
+    .match-input input[type="number"] {
+        width: 60px;
+    }
+
+    .match-input select {
+        width: 150px;
+    }
+
+    .match-input .team-section {
+        grid-template-columns: 1fr;
+        gap: 5px;
+    }
+
+    .match-input .goal-details div {
+        grid-template-columns: 1fr;
+        gap: 5px;
     }
 
     button {
@@ -245,9 +295,5 @@ li {
     div {
         flex-direction: column;
         align-items: flex-start;
-    }
-
-    .match-input {
-        padding: 8px;
     }
 }
