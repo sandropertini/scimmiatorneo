@@ -139,7 +139,7 @@ function generateTournament() {
     const numRounds = Math.log2(powerOfTwo);
     for (let i = 1; i < numRounds; i++) {
         const roundName = i === numRounds - 1 ? 'Finale' : `Semifinali`;
-        const matches = Array(powerOfTwo / Math.pow(2, i uber + 1)).fill().map(() => ({
+        const matches = Array(powerOfTwo / Math.pow(2, i + 1)).fill().map(() => ({
             home: null,
             away: null,
             played: false,
