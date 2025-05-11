@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionale Tornei - Ape Escape 2 Monkey Football</title>
+    <link rel="stylesheet" href="tournament.css">
+</head>
+<body>
+    <h1>Gestionale Tornei - Ape Escape 2 Monkey Football</h1>
+    
+    <div>
+        <h2>Carica Squadre</h2>
+        <input type="file" id="teams-file" accept=".json">
+        <button onclick="loadTeams()">Carica</button>
+    </div>
+
+    <div id="teams-list" style="display: none;">
+        <h2>Squadre Caricate</h2>
+        <ul id="teams"></ul>
+        <button onclick="generateLeague()">Genera Campionato</button>
+    </div>
+
+    <div id="league-section" style="display: none;">
+        <h2>Campionato</h2>
+        <h3>Calendario</h3>
+        <div id="calendar"></div>
+        <button onclick="simulateMatchday()">Simula Giornata</button>
+        <button onclick="simulateAll()">Simula Tutto</button>
+        <button onclick="exportResults()">Esporta Risultati</button>
+        <h3>Classifica</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Squadra</th>
+                    <th>Punti</th>
+                    <th>Vittorie</th>
+                    <th>Pareggi</th>
+                    <th>Sconfitte</th>
+                    <th>Gol Fatti</th>
+                    <th>Gol Subiti</th>
+                    <th>Differenza Reti</th>
+                </tr>
+            </thead>
+            <tbody id="standings"></tbody>
+        </table>
+    </div>
+
+    <script src="tournament.js"></script>
+</body>
+</html>
