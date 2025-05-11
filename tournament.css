@@ -83,3 +83,11 @@ li {
 .match-input div {
     margin-top: 5px;
 }
+
+#tournament-standings {
+    margin-top: 20px;
+}
+
+.round {
+    margin-bottom: 20px;
+}
