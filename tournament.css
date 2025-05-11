@@ -1,83 +1,196 @@
+/* Importa font futuristici da Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap');
+
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
+    font-family: 'Roboto Mono', monospace;
+    margin: 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+    color: #ffffff;
+    overflow-x: hidden;
 }
 
 h1, h2, h3, h4 {
-    color: #333;
+    font-family: 'Orbitron', sans-serif;
+    color: #ff00ff; /* Neon Pink */
+    text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+h1 {
+    font-size: 2.5em;
+    text-align: center;
+    animation: flicker 3s infinite alternate;
+}
+
+/* Animazione flicker per il titolo */
+@keyframes flicker {
+    0%, 100% { text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff; }
+    50% { text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff; }
 }
 
 div {
     margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
 }
 
-button {
-    padding: 8px 16px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+label {
+    color: #00ffcc; /* Ciano Neon */
+    font-weight: bold;
+    text-shadow: 0 0 5px #00ffcc;
     margin-right: 10px;
 }
 
+input[type="file"], input[type="number"], select {
+    padding: 8px;
+    background-color: #333;
+    border: 2px solid #00ff00; /* Verde Lime */
+    border-radius: 5px;
+    color: #ffffff;
+    font-family: 'Roboto Mono', monospace;
+    box-shadow: 0 0 10px #00ff00;
+    transition: all 0.3s ease;
+}
+
+input[type="file"]:focus, input[type="number"]:focus, select:focus {
+    outline: none;
+    border-color: #ffff00; /* Giallo Acido */
+    box-shadow: 0 0 15px #ffff00;
+}
+
+button {
+    padding: 10px 20px;
+    background: linear-gradient(45deg, #ff00ff, #00ffcc);
+    border: none;
+    border-radius: 5px;
+    color: #000;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 0 15px #ff00ff, 0 0 25px #00ffcc;
+    transition: transform 0.2s, box-shadow 0.2s;
+    animation: pulse 2s infinite;
+}
+
 button:hover {
-    background-color: #218838;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px #ff00ff, 0 0 30px #00ffcc;
+}
+
+button:disabled {
+    background: #555;
+    box-shadow: none;
+    cursor: not-allowed;
+    animation: none;
+}
+
+/* Animazione pulsante */
+@keyframes pulse {
+    0% { box-shadow: 0 0 15px #ff00ff, 0 0 25px #00ffcc; }
+    50% { box-shadow: 0 0 25px #ff00ff, 0 0 35px #00ffcc; }
+    100% { box-shadow: 0 0 15px #ff00ff, 0 0 25px #00ffcc; }
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #00ffcc;
+    box-shadow: 0 0 20px #00ffcc;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
 th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
+    padding: 12px;
     text-align: left;
+    border-bottom: 1px solid #333;
 }
 
 th {
-    background-color: #f2f2f2;
+    background: linear-gradient(45deg, #00ff00, #00ffcc);
+    color: #000;
+    font-family: 'Orbitron', sans-serif;
+    text-transform: uppercase;
+    text-shadow: 0 0 5px #000;
     cursor: pointer;
+    transition: background 0.3s;
+}
+
+th:hover {
+    background: linear-gradient(45deg, #ffff00, #00ffcc);
+}
+
+td {
+    color: #ffffff;
+    font-family: 'Roboto Mono', monospace;
+}
+
+tr {
+    transition: background 0.3s;
+}
+
+tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+tr:hover {
+    background: rgba(0, 255, 204, 0.2); /* Ciano chiaro */
+    box-shadow: inset 0 0 10px #00ffcc;
 }
 
 ul {
-    list-style-type: none;
+    list-style: none;
     padding: 0;
 }
 
 li {
-    margin-bottom: 10px;
-}
-
-#match-results-input {
-    margin-bottom: 20px;
+    margin: 5px 0;
+    color: #ffffff;
+    text-shadow: 0 0 5px #ffffff;
 }
 
 .match-input {
     margin: 10px 0;
     padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #ff00ff;
+    border-radius: 5px;
+    box-shadow: 0 0 15px #ff00ff;
 }
 
 .match-input label {
-    margin-right: 10px;
+    color: #00ffcc;
+    text-shadow: 0 0 5px #00ffcc;
 }
 
 .match-input input[type="number"] {
     width: 60px;
-    padding: 5px;
-    margin: 0 5px;
+    background: #222;
+    border-color: #ff00ff;
+    box-shadow: 0 0 10px #ff00ff;
+}
+
+.match-input input[type="number"]:focus {
+    border-color: #ffff00;
+    box-shadow: 0 0 15px #ffff00;
 }
 
 .match-input select {
-    padding: 5px;
-    margin: 0 5px;
     min-width: 150px;
+    background: #333;
+    border-color: #00ff00;
+    box-shadow: 0 0 10px #00ff00;
+}
+
+.match-input select:focus {
+    border-color: #ffff00;
+    box-shadow: 0 0 15px #ffff00;
 }
 
 .match-input div {
@@ -86,8 +199,55 @@ li {
 
 #tournament-standings {
     margin-top: 20px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #00ffcc;
+    border-radius: 10px;
+    box-shadow: 0 0 20px #00ffcc;
 }
 
 .round {
     margin-bottom: 20px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid #00ff00;
+    border-radius: 5px;
+    box-shadow: 0 0 15px #00ff00;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.8em;
+    }
+
+    table {
+        font-size: 0.9em;
+    }
+
+    th, td {
+        padding: 8px;
+    }
+
+    input[type="number"] {
+        width: 50px;
+    }
+
+    select {
+        min-width: 120px;
+    }
+
+    button {
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+
+    div {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .match-input {
+        padding: 8px;
+    }
 }
