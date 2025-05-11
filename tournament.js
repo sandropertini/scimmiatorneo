@@ -271,6 +271,7 @@ function updateTournamentStandings() {
 }
 
 // Inizia l'inserimento dei risultati
+// Inizia l'inserimento dei risultati
 function startMatchdayInput() {
     if (currentRound >= competition.data.length) {
         alert('Competizione completata!');
@@ -289,13 +290,18 @@ function startMatchdayInput() {
             hasValidMatches = true;
             const matchDiv = document.createElement('div');
             matchDiv.className = 'match-input';
-            matchDiv.innerHTML = `<strong>${match.home} vs ${match.away}</strong><br>
-                <label>Gol ${match.home}: </label>
-                <input type="number" min="0" id="home-goals-${matchIndex}" placeholder="Totale Gol" required>
-                <div id="home-goals-details-${matchIndex}"></div>
-                <label>Gol ${match.away}: </label>
-                <input type="number" min="0" id="away-goals-${matchIndex}" placeholder="Totale Gol" required>
-                <div id="away-goals-details-${matchIndex}"></div>
+            matchDiv.innerHTML = `
+                <strong>${match.home} vs ${match.away}</strong>
+                <div class="team-section">
+                    <label>Gol ${match.home}:</label>
+                    <input type="number" min="0" id="home-goals-${matchIndex}" placeholder="Totale Gol" required>
+                </div>
+                <div id="home-goals-details-${matchIndex}" class="goal-details"></div>
+                <div class="team-section">
+                    <label>Gol ${match.away}:</label>
+                    <input type="number" min="0" id="away-goals-${matchIndex}" placeholder="Totale Gol" required>
+                </div>
+                <div id="away-goals-details-${matchIndex}" class="goal-details"></div>
             `;
 
             inputDiv.appendChild(matchDiv);
@@ -323,6 +329,7 @@ function startMatchdayInput() {
     }
 }
 
+
 // Aggiorna i campi per i dettagli dei gol
 function updateGoalDetails(match, matchIndex, teamType) {
     const teamName = teamType === 'home' ? match.home : match.away;
@@ -336,12 +343,12 @@ function updateGoalDetails(match, matchIndex, teamType) {
     for (let i = 0; i < goalsCount; i++) {
         const goalDiv = document.createElement('div');
         goalDiv.innerHTML = `
-            Gol ${i + 1}:
+            <label>Gol ${i + 1}:</label>
             <select id="${teamType}-goal-${matchIndex}-${i}-character" required>
                 <option value="">Seleziona Personaggio</option>
                 ${team.characters.map(c => `<option value="${c.id}">${c.name} (${c.position})</option>`).join('')}
             </select>
-            <input type="number" min="1" max="90" id="${teamType}-goal-${matchIndex}-${i}-minute" placeholder="Minuto" required>
+            <input type="number" min="1" max="90" id="${teamType}-goal-${matchIndex}-${i}-minute" placeholder="Minuto (1-90)" required>
         `;
         detailsDiv.appendChild(goalDiv);
     }
