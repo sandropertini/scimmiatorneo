@@ -68,7 +68,8 @@ function generateLeague() {
                 away: isReturn ? teamNames[home] : teamNames[away],
                 played: false,
                 homeGoals: 0,
-                awayGoals: 0
+                awayGoals: 0,
+                goals: [] // Array per dettagli gol: { team, characterId, characterName, minute }
             });
         }
         calendar.push({ matchday: matchday + 1, matches });
@@ -101,7 +102,13 @@ function displayCalendar() {
         const ul = document.createElement('ul');
         day.matches.forEach(match => {
             const li = document.createElement('li');
-            li.textContent = `${match.home} vs ${match.away}${match.played ? `: ${match.homeGoals} - ${match.awayGoals}` : ''}`;
+            let resultText = `${match.home} vs ${match.away}`;
+            if (match.played) {
+                resultText += `: ${match.homeGoals} - ${match.awayGoals}`;
+                const goalDetails = match.goals.map(goal => `${goal.characterName} (${goal.team}) al ${goal.minute}'`).join(', ');
+                if (goalDetails) resultText += ` (${goalDetails})`;
+            }
+            li.textContent = resultText;
             ul.appendChild(li);
         });
         dayDiv.appendChild(ul);
@@ -143,18 +150,53 @@ function startMatchdayInput() {
     document.getElementById('current-matchday').textContent = day.matchday;
     document.getElementById('matchday-input').style.display = 'block';
 
-    day.matches.forEach((match, index) => {
+    day.matches.forEach((match, matchIndex) => {
         if (!match.played) {
-            const div = document.createElement('div');
-            div.innerHTML = `
-                ${match.home} vs ${match.away}: 
-                <input type="number" min="0" id="home-goals-${index}" placeholder="Gol Casa" required>
-                -
-                <input type="number" min="0" id="away-goals-${index}" placeholder="Gol Trasferta" required>
+            const matchDiv = document.createElement('div');
+            matchDiv.className = 'match-input';
+            matchDiv.innerHTML = `<strong>${match.home} vs ${match.away}</strong><br>
+                <label>Gol ${match.home}: </label>
+                <input type="number" min="0" id="home-goals-${matchIndex}" placeholder="Totale Gol" required>
+                <div id="home-goals-details-${matchIndex}"></div>
+                <label>Gol ${match.away}: </label>
+                <input type="number" min="0" id="away-goals-${matchIndex}" placeholder="Totale Gol" required>
+                <div id="away-goals-details-${matchIndex}"></div>
             `;
-            inputDiv.appendChild(div);
+
+            // Aggiungi listener per aggiornare i dettagli dei gol
+            const homeGoalsInput = matchDiv.querySelector(`#home-goals-${matchIndex}`);
+            const awayGoalsInput = matchDiv.querySelector(`#away-goals-${matchIndex}`);
+            homeGoalsInput.addEventListener('input', () => updateGoalDetails(match, matchIndex, 'home'));
+            awayGoalsInput.addEventListener('input', () => updateGoalDetails(match, matchIndex, 'away'));
+
+            inputDiv.appendChild(matchDiv);
+            updateGoalDetails(match, matchIndex, 'home');
+            updateGoalDetails(match, matchIndex, 'away');
         }
     });
+}
+
+// Aggiorna i campi per i dettagli dei gol
+function updateGoalDetails(match, matchIndex, teamType) {
+    const teamName = teamType === 'home' ? match.home : match.away;
+    const team = teams.find(t => t.player === teamName);
+    const goalsInput = document.getElementById(`${teamType}-goals-${matchIndex}`);
+    const goalsCount = parseInt(goalsInput.value) || 0;
+    const detailsDiv = document.getElementById(`${teamType}-goals-details-${matchIndex}`);
+    detailsDiv.innerHTML = '';
+
+    for (let i = 0; i < goalsCount; i++) {
+        const goalDiv = document.createElement('div');
+        goalDiv.innerHTML = `
+            Gol ${i + 1}:
+            <select id="${teamType}-goal-${matchIndex}-${i}-character" required>
+                <option value="">Seleziona Personaggio</option>
+                ${team.characters.map(c => `<option value="${c.id}">${c.name} (${c.position})</option>`).join('')}
+            </select>
+            <input type="number" min="1" max="90" id="${teamType}-goal-${matchIndex}-${i}-minute" placeholder="Minuto" required>
+        `;
+        detailsDiv.appendChild(goalDiv);
+    }
 }
 
 // Salva i risultati della giornata
@@ -162,10 +204,10 @@ function saveMatchdayResults() {
     const day = calendar[currentMatchday];
     let allValid = true;
 
-    day.matches.forEach((match, index) => {
+    day.matches.forEach((match, matchIndex) => {
         if (!match.played) {
-            const homeGoalsInput = document.getElementById(`home-goals-${index}`);
-            const awayGoalsInput = document.getElementById(`away-goals-${index}`);
+            const homeGoalsInput = document.getElementById(`home-goals-${matchIndex}`);
+            const awayGoalsInput = document.getElementById(`away-goals-${matchIndex}`);
             const homeGoals = parseInt(homeGoalsInput.value) || -1;
             const awayGoals = parseInt(awayGoalsInput.value) || -1;
 
@@ -175,8 +217,55 @@ function saveMatchdayResults() {
                 return;
             }
 
+            const goals = [];
+            // Raccogli dettagli gol casa
+            for (let i = 0; i < homegoals; i++) {
+                const characterSelect = document.getElementById(`home-goal-${matchIndex}-${i}-character`);
+                const minuteInput = document.getElementById(`home-goal-${matchIndex}-${i}-minute`);
+                const characterId = characterSelect.value;
+                const minute = parseInt(minuteInput.value) || -1;
+
+                if (!characterId || minute < 1 || minute > 90) {
+                    alert(`Seleziona un personaggio e inserisci un minuto valido (1-90) per il gol ${i + 1} di ${match.home}!`);
+                    allValid = false;
+                    return;
+                }
+
+                const character = teams.find(t => t.player === match.home).characters.find(c => c.id == characterId);
+                goals.push({
+                    team: match.home,
+                    characterId: parseInt(characterId),
+                    characterName: character.name,
+                    minute
+                });
+            }
+
+            // Raccogli dettagli gol trasferta
+            for (let i = 0; i < awayGoals; i++) {
+                const characterSelect = document.getElementById(`away-goal-${matchIndex}-${i}-character`);
+                const minuteInput = document.getElementById(`away-goal-${matchIndex}-${i}-minute`);
+                const characterId = characterSelect.value;
+                const minute = parseInt(minuteInput.value) || -1;
+
+                if (!characterId || minute < 1 || minute > 90) {
+                    alert(`Seleziona un personaggio e inserisci un minuto valido (1-90) per il gol ${i + 1} di ${match.away}!`);
+                    allValid = false;
+                    return;
+                }
+
+                const character = teams.find(t => t.player === match.away).characters.find(c => c.id == characterId);
+                goals.push({
+                    team: match.away,
+                    characterId: parseInt(characterId),
+                    characterName: character.name,
+                    minute
+                });
+            }
+
+            // Aggiorna partita
             match.homeGoals = homeGoals;
             match.awayGoals = awayGoals;
+            match.goals = goals;
             match.played = true;
 
             // Aggiorna classifica
