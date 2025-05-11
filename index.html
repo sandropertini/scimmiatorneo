@@ -25,8 +25,12 @@
         <h2>Campionato</h2>
         <h3>Calendario</h3>
         <div id="calendar"></div>
-        <button onclick="simulateMatchday()">Simula Giornata</button>
-        <button onclick="simulateAll()">Simula Tutto</button>
+        <div id="matchday-input" style="display: none;">
+            <h4>Inserisci Risultati Giornata <span id="current-matchday"></span></h4>
+            <div id="match-results-input"></div>
+            <button onclick="saveMatchdayResults()">Salva Risultati</button>
+        </div>
+        <button onclick="startMatchdayInput()">Inserisci Risultati Giornata</button>
         <button onclick="exportResults()">Esporta Risultati</button>
         <h3>Classifica</h3>
         <table>
